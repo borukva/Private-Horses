@@ -62,7 +62,15 @@ public abstract class AbstractHorseEntityMixin extends AnimalEntity implements T
         }
 
         if (horse.getWorld().getGameRules().getBoolean(DISABLE_DAMAGE_HORSES)) {
+            if (source.isOf(DamageTypes.GENERIC_KILL)) {
+                return;
+            }
+
             if (source.isOf(DamageTypes.FALL)) {
+                return;
+            }
+
+            if (attacker != null && canInteract(horse, attacker)) {
                 return;
             }
 
