@@ -5,6 +5,10 @@ With this mod, you can relax — no one but you can ride or leash your animal no
 
 ---
 
+Only the owner can interact with their horse, donkey, or mule, except for operators and players with the `private-horses.interact` permission.
+
+Additionally, a new gamerule, `private-horses.disable_damage`, has been added. By default, it is disabled, but when enabled, it prevents any damage to tamed horses, donkeys, and mules, except for fall damage and damage from their owner.
+
 Also, I adapted the idea of transferring the animal from [Transferable Pets](https://modrinth.com/plugin/transferable-pets) mod. <br>
 It works same way: leash your horse/donkey/mule, press shift and right-click on a player you want transfer to.
 
@@ -21,6 +25,8 @@ message:
   # 'PlayerName' transferred 'AnimalName' to you
   transfer: '%s transferred %s to you'
 ```
+
+Note: If a player tries to equip horse armor on someone else's horse, it will appear equipped due to a client-side visual bug. However, the armor will remain in the player's inventory.
 
 ---
 You can visit my little [contact card](https://somykos.github.io/web/), <br>

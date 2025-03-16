@@ -37,6 +37,9 @@ dependencies {
 	modImplementation("eu.pb4:polymer-resource-pack:${polymer}")
 	modImplementation("eu.pb4:polymer-autohost:${polymer}")
 
+	modImplementation include("me.lucko:fabric-permissions-api:${permissions_api_version}")
+
+
 	include implementation ("com.github.Carleslc.Simple-YAML:Simple-Yaml:1.8.4")
 }
 

@@ -3,7 +3,7 @@
 	"id": "private-horses",
 	"version": "${version}",
 	"name": "Private Horses",
-	"description": "",
+	"description": "Prohibits interaction with horses/donkeys/mules belonging to someone else",
 	"authors": [
 		"somyk"
 	],

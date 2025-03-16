@@ -1,6 +1,7 @@
 package net.somyk.privatehorses.util;
 
 import com.mojang.authlib.GameProfile;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
@@ -11,7 +12,9 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.somyk.privatehorses.PrivateHorses;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -20,21 +23,31 @@ import static net.somyk.privatehorses.util.ModConfig.getStringValue;
 
 public class Utilities {
 
-    public static boolean canInteract(AbstractHorseEntity horse, Entity entity){
-        if(horse.getOwnerUuid() == null || horse.getOwnerUuid().equals(entity.getUuid()) || entity instanceof LeashKnotEntity){
+    public static boolean canInteract(AbstractHorseEntity horse, Entity entity) {
+        return canInteract(horse, entity, false);
+    }
+
+    public static boolean canInteract(AbstractHorseEntity horse, Entity entity, boolean silent){
+        if(horse.getOwnerUuid() == null
+                || horse.getOwnerUuid().equals(entity.getUuid())
+                || entity instanceof LeashKnotEntity
+                || Permissions.check(entity, PrivateHorses.MOD_ID+".interact",4)){
             return true;
         } else {
-            Optional<GameProfile> profile = horse.getServer().getUserCache().getByUuid(horse.getOwnerUuid());
-            String playerName;
-            String horseName = "§b"+horse.getName().getString()+"§f";
-            Text message;
+            if(!silent) {
+                Optional<GameProfile> profile = Objects.requireNonNull(Objects.requireNonNull(horse.getServer()).getUserCache()).getByUuid(horse.getOwnerUuid());
+                String playerName;
+                String horseName = "§b" + horse.getName().getString() + "§f";
+                Text message;
 
-            if (entity instanceof ServerPlayerEntity player) {
-                playerName = profile.map(gameProfile -> "§e"+gameProfile.getName()).orElse("§7§kunknown");
+                if (entity instanceof ServerPlayerEntity player) {
+                    playerName = profile.map(gameProfile -> "§e" + gameProfile.getName()).orElse("§7§kunknown");
 
-                if(polymer_loaded) message = Text.translatable("message.private-horses.owned_by", horseName, playerName);
-                else message = Text.literal(getStringValue("message.owned_by").formatted(horseName, playerName));
-                player.sendMessage(message, true);
+                    if (polymer_loaded)
+                        message = Text.translatable("message.private-horses.owned_by", horseName, playerName);
+                    else message = Text.literal(getStringValue("message.owned_by").formatted(horseName, playerName));
+                    player.sendMessage(message, true);
+                }
             }
 
             return false;

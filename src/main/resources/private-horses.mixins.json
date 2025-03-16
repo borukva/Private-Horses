@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "AbstractHorseEntityMixin",
-    "PlayerEntityMixin"
+    "PlayerEntityMixin",
+    "TemptGoalMixin"
   ],
   "injectors": {
     "defaultRequire": 1
