@@ -8,13 +8,11 @@ import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.somyk.privatehorses.PrivateHorses;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -24,33 +22,27 @@ import static net.somyk.privatehorses.util.ModConfig.getStringValue;
 public class Utilities {
 
     public static boolean canInteract(AbstractHorseEntity horse, Entity entity) {
-        return canInteract(horse, entity, false);
-    }
-
-    public static boolean canInteract(AbstractHorseEntity horse, Entity entity, boolean silent){
-        if(horse.getOwnerUuid() == null
+        return horse.getOwnerUuid() == null
                 || horse.getOwnerUuid().equals(entity.getUuid())
                 || entity instanceof LeashKnotEntity
-                || Permissions.check(entity, PrivateHorses.MOD_ID+".interact",4)){
-            return true;
-        } else {
-            if(!silent) {
-                Optional<GameProfile> profile = Objects.requireNonNull(Objects.requireNonNull(horse.getServer()).getUserCache()).getByUuid(horse.getOwnerUuid());
-                String playerName;
-                String horseName = "§b" + horse.getName().getString() + "§f";
-                Text message;
+                || Permissions.check(entity, PrivateHorses.MOD_ID + ".interact", 4); // Взаємодія дозволена
+    }
 
-                if (entity instanceof ServerPlayerEntity player) {
-                    playerName = profile.map(gameProfile -> "§e" + gameProfile.getName()).orElse("§7§kunknown");
+    public static void sendOwnershipNotification(AbstractHorseEntity horse, Entity entity) {
+        // Перевірки на null і тип гравця, як в оригінальному else блоці
+        if (entity instanceof ServerPlayerEntity player && horse.getOwnerUuid() != null && horse.getServer() != null && horse.getServer().getUserCache() != null) {
+            Optional<GameProfile> profile = horse.getServer().getUserCache().getByUuid(horse.getOwnerUuid());
+            String playerName;
+            String horseName = "§b" + horse.getName().getString() + "§f";
+            Text message;
 
-                    if (polymer_loaded)
-                        message = Text.translatable("message.private-horses.owned_by", horseName, playerName);
-                    else message = Text.literal(getStringValue("message.owned_by").formatted(horseName, playerName));
-                    player.sendMessage(message, true);
-                }
-            }
+            playerName = profile.map(gameProfile -> "§e" + gameProfile.getName()).orElse("§7§kunknown");
 
-            return false;
+            if (polymer_loaded)
+                message = Text.translatable("message.private-horses.owned_by", horseName, playerName);
+            else message = Text.literal(getStringValue("message.owned_by").formatted(horseName, playerName));
+
+            player.sendMessage(message, true);
         }
     }
 
@@ -75,10 +67,9 @@ public class Utilities {
         targetPlayer.sendMessage(targetPlayerMessage, true);
     }
 
-    public static void showHearts(ServerWorld world, Entity entity) {
+    public static void showParticles(ServerWorld world, Entity entity, ParticleEffect particleEffect) {
         // This code was written in Transferable Pets mod with CC BY-NC 4.0 license by WinterWolfSV
         // CC BY-NC 4.0 license: https://github.com/WinterWolfSV/Transferable_Pets/blob/master/LICENSE
-        ParticleEffect particleEffect = ParticleTypes.HEART;
         Random random = new Random();
 
         for (int i = 0; i < 7; i++) {

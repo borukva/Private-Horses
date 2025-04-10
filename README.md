@@ -1,18 +1,42 @@
-### Private Horses
+### 🐴 Private Horses — keep your mount yours!
 
-Sick of having your horse, donkey, or mule jacked? <br>
-With this mod, you can relax — no one but you can ride or leash your animal now!
+This mod ensures that **only the owner** can interact with their **horse**, **donkey**, or **mule** — no more random riders jumping on your beloved steed!  
+Exceptions apply only to **server operators** and players with the `private-horses.interact` permission.
 
 ---
 
-Only the owner can interact with their horse, donkey, or mule, except for operators and players with the `private-horses.interact` permission.
+### ⚙️ New Gamerule: `private-horses.disable_damage`
 
-Additionally, a new gamerule, `private-horses.disable_damage`, has been added. By default, it is disabled, but when enabled, it prevents any damage to tamed horses, donkeys, and mules, except for fall damage and damage from their owner.
+Want extra protection for your tamed animals?  
+Enable the new gamerule `private-horses.disable_damage` to prevent any damage to your horse, donkey, or mule — except for **fall damage** and damage caused by the **owner**.  
+By default, this rule is **disabled**.
 
-Also, I adapted the idea of transferring the animal from [Transferable Pets](https://modrinth.com/plugin/transferable-pets) mod. <br>
-It works same way: leash your horse/donkey/mule, press shift and right-click on a player you want transfer to.
+---
 
-If you`re not using Polymer this config will be generated.
+### 🔐 Public or private? You decide.
+
+You can freely switch your mount’s accessibility:
+
+- **Make it public** – *Sneak and right-click with* **sugar**
+- **Make it private again** – *Sneak and right-click with* **wheat**
+
+This lets you easily share or reclaim access to your horse, donkey, or mule.
+
+---
+
+### 🔄 Transfer ownership
+
+Inspired by the [Transferable Pets](https://modrinth.com/plugin/transferable-pets) mod, this mod also lets you **give your animal to another player**.
+
+To do so:
+1. Put the animal on a **lead** (leash).
+2. **Sneak and right-click** the player you want to transfer it to.
+
+Done! They’re now the proud new owner.
+
+---
+
+This config will be generated if Polymer is not installed on your server.
 ```yaml
 # Message translations
 message:

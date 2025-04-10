@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -15,8 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.somyk.privatehorses.util.Utilities.succeedTransferMessage;
-import static net.somyk.privatehorses.util.Utilities.showHearts;
+import static net.somyk.privatehorses.util.Utilities.*;
 
 // This code was written in Transferable Pets mod with CC BY-NC 4.0 license by WinterWolfSV and adapted by myself for AbstractHorseEntity
 // CC BY-NC 4.0 license: https://github.com/WinterWolfSV/Transferable_Pets/blob/master/LICENSE
@@ -40,8 +40,8 @@ public class PlayerEntityMixin {
             horse.setOwnerUuid(targetPlayer.getUuid()); // changed from ((TameableEntity) animal).setOwner(targetPlayer);
             animal.detachLeash(true, false);
             animal.attachLeash(targetPlayer, true);
-            showHearts(world, animal);
-            showHearts(world, targetPlayer);
+            showParticles(world, animal, ParticleTypes.HEART);
+            showParticles(world, targetPlayer, ParticleTypes.HEART);
 
             succeedTransferMessage(targetPlayer, player, animal); // replaced with my custom function
         }

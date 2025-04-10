@@ -20,7 +20,7 @@ public class TemptGoalMixin {
     private PlayerEntity cancelTempt(World instance, TargetPredicate targetPredicate, LivingEntity livingEntity, Operation<PlayerEntity> original){
         PlayerEntity playerEntity = original.call(instance, targetPredicate, livingEntity);
         if(livingEntity instanceof AbstractHorseEntity horse && playerEntity != null){
-            if(!canInteract(horse, playerEntity, true)) return null;
+            if(!canInteract(horse, playerEntity)) return null;
         }
         return playerEntity;
     }
