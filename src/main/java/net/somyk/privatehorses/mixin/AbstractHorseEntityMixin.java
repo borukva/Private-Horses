@@ -56,9 +56,10 @@ public abstract class AbstractHorseEntityMixin extends AnimalEntity implements T
             if (this.publicHorse != newPublicHorseValue) {
                 this.publicHorse = newPublicHorseValue;
                 handStack.decrementUnlessCreative(1, player);
-                showParticles((ServerWorld) horse.getWorld(), horse, newPublicHorseValue? ParticleTypes.WAX_OFF : ParticleTypes.WAX_ON);
-                horse.getWorld()
-                        .playSound(
+            if(this.getWorld() instanceof ServerWorld world) {
+                showParticles(world, this, newPublicHorseValue ? ParticleTypes.WAX_OFF : ParticleTypes.WAX_ON);
+            }
+            horse.getWorld().playSound(
                                 null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_HORSE_EAT, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
                         );
                 cir.setReturnValue(ActionResult.SUCCESS);
