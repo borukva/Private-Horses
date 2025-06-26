@@ -11,7 +11,7 @@
 		"sources": "https://github.com/somykOS/Private-Horses",
 		"ko-fi": "https://ko-fi.com/somyk"
 	},
-	"license": "CC-BY-NC-SA-4.0",
+	"license": "MPL 2.0",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
