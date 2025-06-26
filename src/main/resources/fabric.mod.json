@@ -22,12 +22,12 @@
       "private-horses.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.16.0",
-		"minecraft": ">=1.21",
+		"fabricloader": ">=0.16.14",
+		"minecraft": ">=1.21.6",
 		"java": ">=21",
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"polymer-resource-pack": "0.9.12+1.21.1"
+		"polymer-resource-pack": "0.13.2+1.21.6"
 	}
 }

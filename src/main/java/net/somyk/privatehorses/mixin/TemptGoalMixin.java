@@ -11,7 +11,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -20,8 +20,8 @@ import static net.somyk.privatehorses.util.Utilities.canInteract;
 @Mixin(TemptGoal.class)
 public class TemptGoalMixin {
 
-    @WrapOperation(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getClosestPlayer(Lnet/minecraft/entity/ai/TargetPredicate;Lnet/minecraft/entity/LivingEntity;)Lnet/minecraft/entity/player/PlayerEntity;"))
-    private PlayerEntity cancelTempt(World instance, TargetPredicate targetPredicate, LivingEntity livingEntity, Operation<PlayerEntity> original){
+    @WrapOperation(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getClosestPlayer(Lnet/minecraft/entity/ai/TargetPredicate;Lnet/minecraft/entity/LivingEntity;)Lnet/minecraft/entity/player/PlayerEntity;"))
+    private PlayerEntity cancelTempt(ServerWorld instance, TargetPredicate targetPredicate, LivingEntity livingEntity, Operation<PlayerEntity> original){
         PlayerEntity playerEntity = original.call(instance, targetPredicate, livingEntity);
         if(livingEntity instanceof AbstractHorseEntity horse && playerEntity != null){
             if(!canInteract(horse, playerEntity)) return null;

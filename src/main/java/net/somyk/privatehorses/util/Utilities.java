@@ -26,16 +26,20 @@ import static net.somyk.privatehorses.util.ModConfig.getStringValue;
 public class Utilities {
 
     public static boolean canInteract(AbstractHorseEntity horse, Entity entity) {
-        return horse.getOwnerUuid() == null
-                || horse.getOwnerUuid().equals(entity.getUuid())
-                || entity instanceof LeashKnotEntity
-                || Permissions.check(entity, PrivateHorses.MOD_ID + ".interact", 4); // Взаємодія дозволена
+        if(horse.getOwnerReference() == null) {
+            return true;
+        }
+        else {
+            return horse.getOwnerReference().getUuid().equals(entity.getUuid())
+                    || entity instanceof LeashKnotEntity
+                    || Permissions.check(entity, PrivateHorses.MOD_ID + ".interact", 4); // Взаємодія дозволена
+        }
     }
 
     public static void sendOwnershipNotification(AbstractHorseEntity horse, Entity entity) {
         // Перевірки на null і тип гравця, як в оригінальному else блоці
-        if (entity instanceof ServerPlayerEntity player && horse.getOwnerUuid() != null && horse.getServer() != null && horse.getServer().getUserCache() != null) {
-            Optional<GameProfile> profile = horse.getServer().getUserCache().getByUuid(horse.getOwnerUuid());
+        if (entity instanceof ServerPlayerEntity player && horse.getOwnerReference() != null && horse.getServer() != null && horse.getServer().getUserCache() != null) {
+            Optional<GameProfile> profile = horse.getServer().getUserCache().getByUuid(horse.getOwnerReference().getUuid());
             String playerName;
             String horseName = "§b" + horse.getName().getString() + "§f";
             Text message;

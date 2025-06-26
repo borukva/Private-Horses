@@ -35,10 +35,10 @@ public class PlayerEntityMixin {
             if (!(localEntities instanceof AnimalEntity animal)) continue;
             if (!(animal.isLeashed() && animal.getLeashHolder() == player)) continue;
             // Next 'if' statement was changed
-            if (!(animal instanceof AbstractHorseEntity horse && horse.getOwnerUuid() != null && horse.getOwnerUuid().equals(player.getUuid())) ) continue;
+            if (!(animal instanceof AbstractHorseEntity horse && horse.getOwner() != null && horse.getOwner().getUuid().equals(player.getUuid())) ) continue;
 
-            horse.setOwnerUuid(targetPlayer.getUuid()); // changed from ((TameableEntity) animal).setOwner(targetPlayer);
-            animal.detachLeash(true, false);
+            horse.setOwner(targetPlayer); // changed from ((TameableEntity) animal).setOwner(targetPlayer);
+            animal.detachLeashWithoutDrop();
             animal.attachLeash(targetPlayer, true);
             showParticles(world, animal, ParticleTypes.HEART);
             showParticles(world, targetPlayer, ParticleTypes.HEART);

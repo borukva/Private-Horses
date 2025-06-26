@@ -4,9 +4,9 @@
 
 package net.somyk.privatehorses.mixin;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Tameable;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.passive.AbstractHorseEntity;
@@ -14,19 +14,23 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.entity.UniquelyIdentifiable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Objects;
 
 import static net.somyk.privatehorses.PrivateHorses.DISABLE_DAMAGE_HORSES;
 import static net.somyk.privatehorses.util.Utilities.*;
@@ -79,20 +83,11 @@ public abstract class AbstractHorseEntityMixin extends AnimalEntity implements T
         if(!canInteract) cir.setReturnValue(false);
     }
 
-    @Inject(method = "beforeLeashTick", at = @At("HEAD"))
-    private void detachLeash(Entity leashHolder, float distance, CallbackInfoReturnable<Boolean> cir) {
-        AbstractHorseEntity horse = (AbstractHorseEntity) (Object) this;
-        if(!canInteract(horse, leashHolder)) {
-            horse.detachLeash(true, false);
-            if(leashHolder instanceof PlayerEntity player) player.giveItemStack(Items.LEAD.getDefaultStack());
-        }
-    }
-
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
-    private void cancelDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir){
+    private void cancelDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir){
         AbstractHorseEntity horse = (AbstractHorseEntity) (Object) this;
 
-        if (horse.getOwnerUuid() == null) {
+        if (horse.getOwner() == null) {
             return;
         }
 
@@ -104,7 +99,8 @@ public abstract class AbstractHorseEntityMixin extends AnimalEntity implements T
             }
         }
 
-        if (horse.getWorld().getGameRules().getBoolean(DISABLE_DAMAGE_HORSES)) {
+        GameRules gameRules = Objects.requireNonNull(horse.getWorld().getServer()).getGameRules();
+        if (gameRules != null && gameRules.getBoolean(DISABLE_DAMAGE_HORSES)) {
             if (source.isOf(DamageTypes.GENERIC_KILL)) {
                 return;
             }
@@ -121,14 +117,16 @@ public abstract class AbstractHorseEntityMixin extends AnimalEntity implements T
         }
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
-    private void writePublicHorse(NbtCompound nbt, CallbackInfo ci){
-        nbt.putBoolean("Public", this.publicHorse);
+    @WrapOperation(method = "writeCustomData", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LazyEntityReference;writeData(Lnet/minecraft/entity/LazyEntityReference;Lnet/minecraft/storage/WriteView;Ljava/lang/String;)V"))
+    private void writePublicHorse(LazyEntityReference<?> entityRef, WriteView view, String key, Operation<Void> original){
+        view.putBoolean("Public", this.publicHorse);
+        original.call(entityRef, view, key);
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
-    private void readPublicHorse(NbtCompound nbt, CallbackInfo ci){
-        this.publicHorse = nbt.getBoolean("Public");
+    @WrapOperation(method = "readCustomData", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LazyEntityReference;fromDataOrPlayerName(Lnet/minecraft/storage/ReadView;Ljava/lang/String;Lnet/minecraft/world/World;)Lnet/minecraft/entity/LazyEntityReference;"))
+    private <StoredEntityType extends UniquelyIdentifiable> LazyEntityReference<StoredEntityType> readPublicHorse(ReadView view, String key, World world, Operation<LazyEntityReference<StoredEntityType>> original){
+        this.publicHorse = view.getBoolean("Public", false);
+        return original.call(view, key, world);
     }
 
     protected AbstractHorseEntityMixin(EntityType<? extends AnimalEntity> entityType, World world) {
