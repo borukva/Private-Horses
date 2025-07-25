@@ -27,13 +27,14 @@ public class PrivateHorses implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
+		ModConfig.registerConfigs();
 		if(polymer_loaded) {
 			if (PolymerResourcePackUtils.addModAssets(MOD_ID)) {
 				LOGGER.info("[{}]: Successfully added mod assets.", MOD_ID);
 			} else {
 				LOGGER.error("[{}]: Failed to add mod assets.", MOD_ID);
 			}
-		} else ModConfig.registerConfigs();
+		}
 
 	}
 
