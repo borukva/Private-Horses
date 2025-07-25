@@ -46,7 +46,7 @@ public class Utilities {
 
             playerName = profile.map(gameProfile -> "§e" + gameProfile.getName()).orElse("§7§kunknown");
 
-            if (polymer_loaded)
+            if (polymer_loaded && !ModConfig.getBooleanValue("ignore_polymer"))
                 message = Text.translatable("message.private-horses.owned_by", horseName, playerName);
             else message = Text.literal(getStringValue("message.owned_by").formatted(horseName, playerName));
 
@@ -63,7 +63,7 @@ public class Utilities {
         Text targetPlayerMessage;
 
 
-        if(polymer_loaded) {
+        if(polymer_loaded && !ModConfig.getBooleanValue("ignore_polymer")) {
             playerMessage = Text.translatable("message.private-horses.new_owner", targetPlayerName, animalName);
             targetPlayerMessage = Text.translatable("message.private-horses.transfer", playerName, animalName);
         } else {

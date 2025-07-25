@@ -36,12 +36,14 @@ public class ModConfig {
         config.addDefault("message.owned_by", "%s is owned by %s");
         config.addDefault("message.new_owner", "%s is new owner of %s");
         config.addDefault("message.transfer", "%s transferred %s to you");
+        config.addDefault("ignore_polymer", false);
 
         config.setCommentFormat(YamlCommentFormat.PRETTY);
         config.setComment("message", "Message translations");
         config.setComment("message.owned_by", "'AnimalName' is owned by 'PlayerName'");
         config.setComment("message.new_owner", "'PlayerName' is new owner of 'AnimalName'", YamlCommentFormat.BLANK_LINE);
         config.setComment("message.transfer", "'PlayerName' transferred 'AnimalName' to you", YamlCommentFormat.BLANK_LINE);
+        config.setComment("ignore_polymer", "Use the above translations instead of a polymer translation", YamlCommentFormat.BLANK_LINE);
 
         try {
             config.save();
@@ -59,6 +61,17 @@ public class ModConfig {
         }
 
         return config.getString(key);
+    }
+
+    public static Boolean getBooleanValue(String key) {
+        final YamlFile config = new YamlFile((configFilePath.toFile()).getAbsolutePath());
+        try {
+            config.loadWithComments();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return config.getBoolean(key);
     }
 
     public static void setValue(String key, Object newValue){

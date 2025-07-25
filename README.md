@@ -36,7 +36,7 @@ Done! They’re now the proud new owner.
 
 ---
 
-This config will be generated if Polymer is not installed on your server.
+Default config values
 ```yaml
 # Message translations
 message:
@@ -48,6 +48,9 @@ message:
   
   # 'PlayerName' transferred 'AnimalName' to you
   transfer: '%s transferred %s to you'
+
+# Use the above translations instead of a polymer translation
+ignore_polymer: false
 ```
 
 Note: If a player tries to equip horse armor on someone else's horse, it will appear equipped due to a client-side visual bug. However, the armor will remain in the player's inventory.
