@@ -64,10 +64,10 @@ public abstract class AbstractHorseEntityMixin extends AnimalEntity implements T
             if (this.publicHorse != newPublicHorseValue) {
                 this.publicHorse = newPublicHorseValue;
                 handStack.decrementUnlessCreative(1, player);
-            if(this.getWorld() instanceof ServerWorld world) {
+            if(this.getEntityWorld() instanceof ServerWorld world) {
                 showParticles(world, this, newPublicHorseValue ? ParticleTypes.WAX_OFF : ParticleTypes.WAX_ON);
             }
-            horse.getWorld().playSound(
+            horse.getEntityWorld().playSound(
                                 null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_HORSE_EAT, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
                         );
                 cir.setReturnValue(ActionResult.SUCCESS);
@@ -99,7 +99,7 @@ public abstract class AbstractHorseEntityMixin extends AnimalEntity implements T
             }
         }
 
-        GameRules gameRules = Objects.requireNonNull(horse.getWorld().getServer()).getGameRules();
+        GameRules gameRules = Objects.requireNonNull(horse.getEntityWorld().getServer()).getGameRules();
         if (gameRules != null && gameRules.getBoolean(DISABLE_DAMAGE_HORSES)) {
             if (source.isOf(DamageTypes.GENERIC_KILL)) {
                 return;

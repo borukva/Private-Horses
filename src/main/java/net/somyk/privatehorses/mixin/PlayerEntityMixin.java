@@ -29,9 +29,9 @@ public class PlayerEntityMixin {
         PlayerEntity targetPlayer = (PlayerEntity) entity;
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (!(player.isSneaking() && player instanceof ServerPlayerEntity)) return;
-        ServerWorld world = (ServerWorld) player.getWorld();
+        ServerWorld world = (ServerWorld) player.getEntityWorld();
 
-        for (Entity localEntities : world.getOtherEntities(player, Box.of(player.getPos(), 12, 12, 12), EntityPredicates.VALID_ENTITY)) {
+        for (Entity localEntities : world.getOtherEntities(player, Box.of(player.getEntityPos(), 12, 12, 12), EntityPredicates.VALID_ENTITY)) {
             if (!(localEntities instanceof AnimalEntity animal)) continue;
             if (!(animal.isLeashed() && animal.getLeashHolder() == player)) continue;
             // Next 'if' statement was changed

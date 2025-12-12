@@ -12,11 +12,14 @@ import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.somyk.privatehorses.PrivateHorses;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -38,13 +41,14 @@ public class Utilities {
 
     public static void sendOwnershipNotification(AbstractHorseEntity horse, Entity entity) {
         // Перевірки на null і тип гравця, як в оригінальному else блоці
-        if (entity instanceof ServerPlayerEntity player && horse.getOwnerReference() != null && horse.getServer() != null && horse.getServer().getUserCache() != null) {
-            Optional<GameProfile> profile = horse.getServer().getUserCache().getByUuid(horse.getOwnerReference().getUuid());
+        MinecraftServer server = horse.getEntityWorld().getServer();
+        if (entity instanceof ServerPlayerEntity player && horse.getOwnerReference() != null && server != null && server.getPlayerManager() != null) {
+            Optional<GameProfile> profile = Optional.of(player.getGameProfile());
             String playerName;
             String horseName = "§b" + horse.getName().getString() + "§f";
             Text message;
 
-            playerName = profile.map(gameProfile -> "§e" + gameProfile.getName()).orElse("§7§kunknown");
+            playerName = profile.map(gameProfile -> "§e" + gameProfile.name()).orElse("§7§kunknown");
 
             if (polymer_loaded && !ModConfig.getBooleanValue("ignore_polymer"))
                 message = Text.translatable("message.private-horses.owned_by", horseName, playerName);
