@@ -4,7 +4,6 @@
 
 package net.somyk.privatehorses.util;
 
-import com.mojang.authlib.GameProfile;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
@@ -13,13 +12,13 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerConfigEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.NameToIdCache;
 import net.somyk.privatehorses.PrivateHorses;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -42,41 +41,42 @@ public class Utilities {
     public static void sendOwnershipNotification(AbstractHorseEntity horse, Entity entity) {
         // Перевірки на null і тип гравця, як в оригінальному else блоці
         MinecraftServer server = horse.getEntityWorld().getServer();
-        if (entity instanceof ServerPlayerEntity player && horse.getOwnerReference() != null && server != null && server.getPlayerManager() != null) {
-            Optional<GameProfile> profile = Optional.of(player.getGameProfile());
-            String playerName;
+        if (entity instanceof ServerPlayerEntity player && horse.getOwnerReference() != null && server != null && server.getApiServices().nameToIdCache() instanceof NameToIdCache cache) {
+            Optional<PlayerConfigEntry> horseOwner = cache.getByUuid(horse.getOwnerReference().getUuid());
+            String horseOwnerName;
+
             String horseName = "§b" + horse.getName().getString() + "§f";
             Text message;
 
-            playerName = profile.map(gameProfile -> "§e" + gameProfile.name()).orElse("§7§kunknown");
+            horseOwnerName = horseOwner.map(playerConfigEntry -> "§e" + playerConfigEntry.name()).orElse("§7§kunknown");
 
             if (polymer_loaded && !ModConfig.getBooleanValue("ignore_polymer"))
-                message = Text.translatable("message.private-horses.owned_by", horseName, playerName);
-            else message = Text.literal(getStringValue("message.owned_by").formatted(horseName, playerName));
+                message = Text.translatable("message.private-horses.owned_by", horseName, horseOwnerName);
+            else message = Text.literal(getStringValue("message.owned_by").formatted(horseName, horseOwnerName));
 
             player.sendMessage(message, true);
         }
     }
 
-    public static void succeedTransferMessage(PlayerEntity targetPlayer, PlayerEntity player, AnimalEntity animal) {
-        String playerName = "§b"+player.getName().getString()+"§f";
-        String targetPlayerName = "§b"+targetPlayer.getName().getString()+"§f";
+    public static void succeedTransferMessage(PlayerEntity newOwner, PlayerEntity oldOwner, AnimalEntity animal) {
+        String oldOwnerName = "§b"+oldOwner.getName().getString()+"§f";
+        String newOwnerName = "§b"+newOwner.getName().getString()+"§f";
         String animalName = "§e"+animal.getName().getString()+"§f";
 
-        Text playerMessage;
-        Text targetPlayerMessage;
+        Text oldOwnerMessage;
+        Text newOwnerMessage;
 
 
         if(polymer_loaded && !ModConfig.getBooleanValue("ignore_polymer")) {
-            playerMessage = Text.translatable("message.private-horses.new_owner", targetPlayerName, animalName);
-            targetPlayerMessage = Text.translatable("message.private-horses.transfer", playerName, animalName);
+            oldOwnerMessage = Text.translatable("message.private-horses.new_owner", newOwnerName, animalName);
+            newOwnerMessage = Text.translatable("message.private-horses.transfer", oldOwnerName, animalName);
         } else {
-            playerMessage = Text.literal(getStringValue("message.new_owner").formatted(targetPlayerName, animalName));
-            targetPlayerMessage = Text.literal(getStringValue("message.transfer").formatted(playerName, animalName));
+            oldOwnerMessage = Text.literal(getStringValue("message.new_owner").formatted(newOwnerName, animalName));
+            newOwnerMessage = Text.literal(getStringValue("message.transfer").formatted(oldOwnerName, animalName));
         }
 
-        player.sendMessage(playerMessage, true);
-        targetPlayer.sendMessage(targetPlayerMessage, true);
+        oldOwner.sendMessage(oldOwnerMessage, true);
+        newOwner.sendMessage(newOwnerMessage, true);
     }
 
     public static void showParticles(ServerWorld world, Entity entity, ParticleEffect particleEffect) {
