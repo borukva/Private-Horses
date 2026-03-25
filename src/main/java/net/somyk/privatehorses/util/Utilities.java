@@ -5,6 +5,7 @@
 package net.somyk.privatehorses.util;
 
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
@@ -34,7 +35,7 @@ public class Utilities {
         else {
             return horse.getOwnerReference().getUuid().equals(entity.getUuid())
                     || entity instanceof LeashKnotEntity
-                    || Permissions.check(entity, PrivateHorses.MOD_ID + ".interact", 4); // Взаємодія дозволена
+                    || Permissions.check(entity, PrivateHorses.MOD_ID + ".interact", PermissionLevel.ADMINS); // Взаємодія дозволена
         }
     }
 
